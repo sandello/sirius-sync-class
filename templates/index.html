@@ -18,8 +18,10 @@
         <div class="starter">
             <h1>Привет, Сириус!</h1>
             <p class="lead">Это – шаблон для проектной работы.</p>
+            <p class="lead" id="starter-url"></p>
         </div>
         <!--
+        TODO(3): Напишите реализацию счетчика!
         <div class="counter">
             <p id="counter-value" class="lead"></p>
             <button id="counter-button" type="button" class="btn btn-primary">Клац!</button>
@@ -40,12 +42,16 @@
         var user = "neo";
 
         // Устанавливаем подключение к серверу.
-        var ws = new WebSocket("ws://" + document.domain + ":" + location.port + "/ws3");
+        // NB! Стоит изменять адрес подключения, чтобы продвинуться по первому уроку.
+        var url = "ws://" + document.domain + ":" + location.port + "/ws1";
+        var ws = new WebSocket(url);
         messages = document.createElement("ul");
         document.getElementsByClassName("starter")[0].appendChild(messages);
+        document.getElementById("starter-url").innerHTML = "Работаем с <small>" + url + "</small>.";
 
         // Функция-обработчик при получении нового сообщения.
         ws.onmessage = function (event) {
+            console.log("Получили сообщение от сервера.");
             var messages = document.getElementsByTagName("ul")[0];
             var message = document.createElement("li");
             var content = document.createTextNode(event.data);
@@ -56,11 +62,13 @@
 
         // Функция-обработчик при установке соединения.
         ws.onopen = function() {
+            console.log("Установили соединение с сервером.");
             ws.send(user);
         };
 
-        // TODO(3): Напишите реализацию счетчика!
+        console.log("Начали работу!");
 
+        // TODO(3): Напишите реализацию счетчика!
         // $("#counter-button").click(function(event) {
         //     event.preventDefault();
         //     ws.send("Клац-клац!");
