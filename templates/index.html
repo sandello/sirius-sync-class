@@ -51,7 +51,7 @@
 
         // Устанавливаем подключение к серверу.
         // NB! Стоит изменять адрес подключения, чтобы продвинуться по первому уроку.
-        var url = "ws://" + document.domain + ":" + location.port + "/ws1";
+        var url = "ws://" + document.domain + ":" + location.port + "/ws3";
         var ws = new WebSocket(url);
         messages = document.createElement("ul");
         document.getElementById("the-log").appendChild(messages);
@@ -83,8 +83,9 @@
                 $("#counter-value").text("Значение счетчика тайной покрыто.");
             });
 
-            // Код для тестирования.
+            // TODO(4). Код для тестирования.
             // setTimeout(f, dt) планирует исполнение функции f через dt миллисекунд.
+            // $("#some-id").click() генерирует нажатие на элемент с id="some-id".
             // По сути, код через случайные промежутки времени нажимает на кнопку 100 раз.
             var testState = {counter: 0, iterations: 100};
             var testLoop = function() {
