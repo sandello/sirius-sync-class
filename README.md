@@ -14,7 +14,7 @@
 Подсказки:
 - при отправке структурированных данных используйте метод [JSON.stringify](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) для превращения JS-объектов в JSON;
 - при получении используйте [JSON.parse](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) для превращения JSON в JS-объект;
-- печатайте объекты в консоль браузера "как есть" через `console.log`;
+- печатайте объекты в консоль браузера "как есть" через [console.log](https://developer.mozilla.org/ru/docs/Web/API/Console/log);
 
 Полезные ссылки:
 * [Visual Studio Code](https://code.visualstudio.com/)
