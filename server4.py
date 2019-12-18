@@ -18,9 +18,13 @@ logging.basicConfig(level=logging.DEBUG, format="> %(asctime)-15s %(levelname)-8
 async def index():
     return await quart.render_template("index.html")
 
-@app.route("/p/<page>")
-async def handle_p(page):
-    return await quart.render_template(f"p_{page}.html")
+@app.route("/p/<name>")
+async def handle_p(name):
+    return await quart.render_template(f"p_{name}.html")
+
+@app.route("/j/<name>")
+async def handle_j(name):
+    return await quart.render_template(f"j_{name}.js")
 
 queues = set()
 
