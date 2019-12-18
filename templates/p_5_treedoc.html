@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+        <title>Сириус</title>
+    
+        <style>
+        body {
+            padding-top: 5rem;
+        }
+        </style>
+    </head>
+    <body>
+        <main role="main" class="container">
+            <div id="the-starter">
+                <h1>Привет, Сириус!</h1>
+                <p class="lead">Моделируем документ.</p>
+            </div>
+            <div id="the-treedoc-test-cases" class="container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Тест</th>
+                        </tr>
+                    </thead>
+                    <tbody id="the-treedoc-test-cases-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <script src="/static/js/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="/static/js//popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="/static/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+        <script>
+        //------------------------------------------------
+        // !!!!! vvvvv vvvvv vvvvv vvvvv vvvvv vvvvv vvvvv
+        //
+        // TODO(sandello): Модель документа.
+        //
+        // Документ (строку) будем моделировать как пару множеств:
+        //
+        //   D1 = { (position, symbol) } -- множество пар (позиция, символ);
+        //   D2 = { position } -- множество удаленных позиций.
+        //
+        // Адресация в документе будет строиться по индексам и по позициям.
+        //
+        // Индекс -- число -- в классическом понимании идентифицирует символ в строке.
+        // Индекс меняется от 0 до длины документа минус один.
+        //
+        // Позиция -- путь в дереве аллоцированных позиций от корня до листа.
+        // Позиция кодируется списком индексов потомков на пути от корня до листа.
+        //
+        // Пусть A -- арность каждого узла в дереве, например 100. Тогда:
+        //
+        //   [0] -- начало строки.
+        //   [100] -- конец строки (A).
+        //   [0,14] -- идем к "началу строки", далее к 14-му потомку.
+        //   [82,11] -- идем к потомку под номером 82, далее к 11-му потомку.
+
+        // === Публичный интерфейс.
+
+        // Конструктор.
+        //
+        // Инициализирует необходимые структуры данных.
+        // Результат работы конструктора передается далее во все функции первым аргументом.
+        function public_newDocument() {
+            return {
+                foo: "...",
+                bar: "..."
+            };
+        }
+
+        // Вернуть содержимое документа в виде строки.
+        //
+        // Так как документ представлен как множество пар (позиция, символ) плюс множество удаленных позиций,
+        // то нужно проитерироваться по всем неудаленным позициям в возрастающем порядке и склеить символы.
+        function public_getContent(document) {
+            // TODO: Напиши меня!
+        }
+
+        // Вернуть сериализованное состояние.
+        //
+        // Эту функцию можно реализовывать ближе к концу, когда основная функциональность будет готова.
+        //
+        // Сериализованное состояние передается далее по сети другим пользователям.
+        function public_serializeState(document) {
+            // TODO: Напиши меня!
+        }
+
+        // Обновить состояние документа, подклеив полученное сериализованное состояние.
+        //
+        // Эту функцию можно реализовывать ближе к концу, когда основная функциональность будет готова.
+        function public_mergeWithSerializedState(document, serializedState) {
+            // TODO: Напиши меня!
+        }
+
+        // Добавить один символ по индексу.
+        //
+        // Начало строки задается индексом -1.
+        // После конца строки вставлять нельзя.
+        // Для вставки в конец строки нужно передать индекс последнего символа (длина минус один).
+        function public_insertAfter(document, index, symbol) {
+            p = _getPositionByIndex(document, index);
+            q = _getPositionByIndex(document, index + 1);
+            z = _allocate(document, p, q);
+            _applyInsert(document, z, symbol);
+        }
+
+        // Удалить символ по индексу.
+        function public_remove(document, index) {
+            p = _getPositionByIndex(document, index);
+            _applyRemove(document, index);
+        }
+
+        // Заменить символ по индексу.
+        function public_replace(document, index, symbol) {
+            public_remove(document, index);
+            public_insertAfter(document, index - 1, symbol);
+        }
+
+        // === Приватный интерфейс.
+        
+        // Вычислить позицию символа по его индексу.
+        //
+        // Нам важно уметь преобразовывать индексы в позиции и наоборот.
+        //
+        // Если index находится в диапазоне [0; N-1] (N -- длина строки),
+        // то возвращаемая позиция кодирует некоторый узел в дереве.
+        // Если index равен -1 -- начало строки -- то возвращаемая позиция должна быть [0].
+        // Если index равен N -- конец строки -- то возвращаемая позиция должна быть [100].
+        function _getPositionByIndex(document, index) {
+            // TODO: Напиши меня!
+        }
+
+        // Аллоцировать новую позицию между двумя границами.
+        //
+        // Стратегии аллокации между двумя вершинами могут быть разные.
+        // Важно аллоцировать не слишком "плотно" новые идентификаторы,
+        // чтобы обслуживать будущие аллокации без изменения структуры дерева.
+        //
+        // Можно следовать стратегии "аллоцировать ближе к левому краю".
+        // Для этого берем позицию begin и на самом глубоком уровне этой позиции
+        // пробуем сдвинуться на K направо (K ~ 10-20), чтобы оставить "буфер"
+        // под будущие правки.
+        // Если на текущем уровне есть свободные позиции в ближайших K позициях справа,
+        // то возвращаем крайнюю правую свободную позицию.
+        // Если на текущем уровне уже нет места, то создаем новый подуровень.
+        // Важно не забыть проверить, что _нету_ других позиций между begin и свежеаллоцированной позицией.
+        //
+        // Такая стратегия оставляет чуть-чуть места для правок между новой позицией и begin,
+        // и оставляет много места для правок после новой позиции.
+        // Таким образом, эта стратегия подходит хорошо для ситуаций, когда мы дописываем новый текст.
+        //
+        // Пример (здесь "<" значит "предшествует"; K = 10):
+        //   begin = [4, 52]
+        //   если позиции с [4, 52] до [4, 62] свободны, то
+        //   можно аллоцировать [4, 62], так как [4, 52] < [4, 62];
+        //   begin = [8, 93]
+        //   можно аллоцировать [8, 93, 10], так как [8, 93] < [8, 93, 10];
+        //
+        // Можно следовать стратегии "аллоцировать ближе к правому краю".
+        // Логика схожая, только отталкиваемся от end и шагаем влево.
+        // Такая стратегия будет походить для небольших правок в середине текста.
+        //
+        // Пример (здесь "<" значит "предшествует"; K = 10):
+        //   end = [8, 90]
+        //   если позиции с [8, 80] до [8, 90] свободны, то
+        //   можно аллоцировать [8, 80];
+        //   end = [8, 90]
+        //   если позиция [8, 89] занята,
+        //   то можно аллоцировать [8, 89, 90];
+        //
+        // Лучше всего -- подбрасывать монетку и выбирать случайно одну из двух стратегий выше.
+        // Таким образом мы будем маскировать незнание паттерна правок в документе.
+        function _allocate(document, begin, end) {
+            if (Math.random() < 0.5) {
+                return _allocateLeft(document, begin, end);
+            } else {
+                return _allocateRight(document, begin, end);
+            }
+        }
+
+        function _allocateLeft(document, begin, end) {
+            // TODO: Напиши меня!
+        }
+
+        function _allocateRight(document, begin, end) {
+            // TODO: Напиши меня!
+        }
+
+        // Вставить символ в указанную позицию (не индекс!).
+        function _applyInsert(document, position, symbol) {
+            // TODO: Напиши меня! Нужно обновить D1, сохранив нужную пару.
+        }
+
+        // Удалить символ в указанной позиции.
+        function _applyRemove(document, position) {
+            // TODO: Напиши меня! Нужно обновить D2, сохранив удаленную позицию.
+        }
+        // !!!!! ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^
+        //------------------------------------------------
+
+        // Ниже расположен тестирующий код.
+        function assertEquals(left, right) {
+            if (left !== right) {
+                throw new Error("Ошибка: [" + left + "] != [" + right + "]");
+            }
+        }
+        [
+            function testNewDocumentDoesNotThrow() {
+                let d = public_newDocument();
+            },
+            function testMakeEmptyDocument() {
+                let d = public_newDocument();
+                assertEquals(public_getContent(d), "");
+            },
+            function testInsertOneSymbol() {
+                let d = public_newDocument();
+                public_insertAfter(d, -1, "a");
+                assertEquals(public_getContent(d), "a");
+            },
+            function testInsertTwoSymbolsOneByOne() {
+                let d = public_newDocument();
+                public_insertAfter(d, -1, "a");
+                public_insertAfter(d,  0, "b");
+                assertEquals(public_getContent(d), "ab");
+            },
+            function testInsertTwoSymbolsInTheBeginning() {
+                let d = public_newDocument();
+                public_insertAfter(d, -1, "a");
+                public_insertAfter(d, -1, "b");
+                assertEquals(public_getContent(d), "ba");
+            },
+            function testInsertAndRemove() {
+                let d = public_newDocument();
+                public_insertAfter(d, -1, "a");
+                public_remove(d, 0);
+                assertEquals(public_getContent(d), "");
+            },
+            function testCatToCut() {
+                let d = public_newDocument();
+                public_insertAfter(d, -1, "c");
+                public_insertAfter(d,  0, "a");
+                public_insertAfter(d,  1, "t");
+                assertEquals(public_getContent(d), "cat");
+                public_replace(d, 1, "u");
+                assertEquals(public_getContent(d), "cut");
+            },
+            function testSerializingEmptyDocumentDoesNotThrow() {
+                let d1 = public_newDocument();
+                let s1 = public_serializeState(d1);
+            },
+            function testSerializingAndRestoringEmptyDocument() {
+                let d1 = public_newDocument();
+                let s1 = public_serializeState(d1);
+                public_mergeWithSerializedState(d1, s1);
+                assertEquals(public_getContent(d), "");
+            },
+            function testCopyCat() {
+                let d1 = public_newDocument();
+                assertEquals(public_getContent(d1), "");
+                public_insertAfter(d1, -1, "c");
+                public_insertAfter(d1,  0, "a");
+                public_insertAfter(d1,  1, "t");
+                assertEquals(public_getContent(d1), "cat");
+                let s1 = public_serializeState(d1);
+
+                let d2 = public_newDocument();
+                assertEquals(public_getContent(d2), "");
+                public_mergeWithSerializedState(d2, s1);
+                assertEquals(public_getContent(d2), "cat");
+            },
+            function testSyncInsertions() {
+                let d1 = public_newDocument();
+                assertEquals(public_getContent(d1), "");
+                public_insertAfter(d1, -1, "a");
+                public_insertAfter(d1,  0, "b");
+                assertEquals(public_getContent(d1), "ab");
+                let s1 = public_serializeState(d1);
+
+                let d2 = public_newDocument();
+                assertEquals(public_getContent(d2), "");
+                public_mergeWithSerializedState(d2, s1);
+                assertEquals(public_getContent(d2), "ab");
+
+                public_insertAfter(d1, 0, "c");
+                assertEquals(public_getContent(d1), "acb");
+
+                public_insertAfter(d2, 1, "d");
+                assertEquals(public_getContent(d1), "abd");
+
+                let s2 = public_serializeState(d1);
+                let s3 = public_serializeState(d2);
+                public_mergeWithSerializedState(d1, s3);
+                public_mergeWithSerializedState(d2, s2);
+
+                assertEquals(public_getContent(d1), "acbd");
+                assertEquals(public_getContent(d2), "acbd");
+            },
+            function testSyncDeletions() {
+                let d1 = public_newDocument();
+                assertEquals(public_getContent(d1), "");
+                public_insertAfter(d1, -1, "a");
+                public_insertAfter(d1,  0, "b");
+                assertEquals(public_getContent(d1), "ab");
+                let s1 = public_serializeState(d1);
+
+                let d2 = public_newDocument();
+                assertEquals(public_getContent(d2), "");
+                public_mergeWithSerializedState(d2, s1);
+                assertEquals(public_getContent(d2), "ab");
+
+                public_remove(d1, 0);
+                assertEquals(public_getContent(d1), "b");
+
+                public_remove(d2, 1);
+                assertEquals(public_getContent(d1), "a");
+
+                let s2 = public_serializeState(d1);
+                let s3 = public_serializeState(d2);
+                public_mergeWithSerializedState(d1, s3);
+                public_mergeWithSerializedState(d2, s2);
+
+                assertEquals(public_getContent(d1), "");
+                assertEquals(public_getContent(d2), "");
+            },
+        ].forEach(function(testCase) {
+            let name = testCase.name;
+            let error = false;
+            try {
+                testCase();
+                console.log("[" + name + "] Тест пройден!");
+            } catch (ex) {
+                console.error("[" + name + "] Тест завален.", ex);
+                error = true;
+            }
+            let html = '';
+            if (error) {
+                html += '<tr class="table-danger">'
+            } else {
+                html += '<tr class="table-success">'
+            }
+            html += '<td>' + name + '</td>';
+            html += '</tr>';
+            $("#the-treedoc-test-cases-tbody").append(html);
+        });
+        </script>
+  </body>
+</html>

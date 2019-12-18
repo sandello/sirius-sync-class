@@ -1,116 +1,33 @@
 <!doctype html>
 <html lang="ru">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="static/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <title>Сириус</title>
+        <title>Сириус</title>
     
-    <style>
+        <style>
         body {
             padding-top: 5rem;
         }
-    </style>
-  </head>
-  <body>
-    <main role="main" class="container">
-        <div class="starter">
-            <h1>Привет, Сириус!</h1>
-            <p class="lead">Это – шаблон для проектной работы.</p>
-            <p class="lead" id="starter-url"></p>
-        </div>
-        <!--
-        TODO(3): Напишите реализацию счетчика!
-        -->
-        <div id="the-counter">
-            <p id="counter-value" class="lead"></p>
-            <button id="counter-button" type="button" class="btn btn-primary">Клац!</button>
-        </div>
-        <div id="the-tester">
-            <div class="btn-group">
-                <button id="tester-start-button" type="button" class="btn btn-secondary">Старт</button>
-                <button id="tester-stop-button" type="button" class="btn btn-secondary">Стоп</button>
+        </style>
+    </head>
+    <body>
+        <main role="main" class="container">
+            <div>
+                <h1>Привет, Сириус!</h1>
+                <p class="lead">Выбери заготовку для начала работы.</p>
+                <p class="lead">
+                    <div class="list-group">
+                        <a href="/p/1_start" class="list-group-item list-group-item-action">Шаг первый: обмен сообщениями</a>
+                        <a href="/p/2_inc_counter" class="list-group-item list-group-item-action">Шаг второй: монотонный счетчик</a>
+                        <a href="#" class="list-group-item list-group-item-action disabled">Шаг третий: обычный счетчик (домашнее задание)</a>
+                        <a href="/p/4_editlist" class="list-group-item list-group-item-action">Шаг четвертый: правки по Левенштейну</a>
+                        <a href="/p/5_treedoc" class="list-group-item list-group-item-action">Шаг пятый: модель документа</a>
+                    </div>
+                </p>
             </div>
-        </div>
-        <div id="the-log">
-        </div>
-    </main>
-
-    <script src="static/js/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="static/js//popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="static/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-
-    <script>
-        // TODO(1): Упражнение на JavaScript.
-        // Напишите функцию, которая будет генерировать простое, читаемое,
-        // но уникальное имя пользователя. Для этого заведите массив названий животных,
-        // и при генерации имени выбирайте случайное животное и дописывайте случайное число
-        // от 1000 до 10000.
-        var user = "neo";
-
-        // Устанавливаем подключение к серверу.
-        // NB! Стоит изменять адрес подключения, чтобы продвинуться по первому уроку.
-        var url = "ws://" + document.domain + ":" + location.port + "/ws3";
-        var ws = new WebSocket(url);
-        messages = document.createElement("ul");
-        document.getElementById("the-log").appendChild(messages);
-        document.getElementById("starter-url").innerHTML = "Работаем с <small>" + url + "</small>.";
-
-        // Функция-обработчик при получении нового сообщения.
-        ws.onmessage = function (event) {
-            console.log("Получили сообщение от сервера.");
-            var messages = document.getElementsByTagName("ul")[0];
-            var message = document.createElement("li");
-            var content = document.createTextNode(event.data);
-            message.appendChild(content);
-            messages.appendChild(message);
-            console.log(event.data);
-        };
-
-        // Функция-обработчик при установке соединения.
-        ws.onopen = function() {
-            console.log("Установили соединение с сервером.");
-            ws.send(user);
-
-            // TODO(3): Напишите реализацию счетчика!
-            // Здесь #counter-button -- это ссылка на кнопку с id="counter-button".
-            // Также #counter-value -- это ссылка на элемент верстки с id="counter-value".
-            // Конструкция $(...).text("...") изменяет текстовое содержимое элемента верстки.
-            $("#counter-button").click(function(event) {
-                event.preventDefault();
-                ws.send("Клац-клац!");
-                $("#counter-value").text("Значение счетчика тайной покрыто.");
-            });
-
-            // TODO(4). Код для тестирования.
-            // setTimeout(f, dt) планирует исполнение функции f через dt миллисекунд.
-            // $("#some-id").click() генерирует нажатие на элемент с id="some-id".
-            // По сути, код через случайные промежутки времени нажимает на кнопку 100 раз.
-            var testState = {counter: 0, iterations: 100};
-            var testLoop = function() {
-                if (testState.counter < testState.iterations) {
-                    console.log("Нажимаем на кнопку " + testState.counter + "-й раз!");
-                    $("#counter-button").click();
-                    testState.counter++;
-                    setTimeout(testLoop, Math.random() * 1000);
-                } else {
-                    console.log("Тестирование закончено!")
-                }
-            };
-
-            $("#tester-start-button").click(function() {
-                testState.counter = 0;
-                testState.iterations = 100;
-                setTimeout(testLoop, 0);
-            });
-            $("#tester-stop-button").click(function() {
-                testState.counter = 0;
-                testState.iterations = 0;
-            });
-        };
-
-        console.log("Начали работу!");
-    </script>
-  </body>
+        </main>
+    </body>
 </html>

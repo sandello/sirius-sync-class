@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+        <title>Сириус</title>
+    
+        <style>
+        body {
+            padding-top: 5rem;
+        }
+        </style>
+    </head>
+    <body>
+        <main role="main" class="container">
+            <div id="the-starter">
+                <h1>Привет, Сириус!</h1>
+                <p class="lead">Правим строки.</p>
+            </div>
+            <div id="the-editlist-sandbox" class="container">
+                <h6 class="font-weight-light">Интерактивное тестирование</h6>
+                <div class="row">
+                    <form class="col">
+                        <input id="sandbox-left" class="form-control mb-3" type="text" placeholder="Левая строка" />
+                        <input id="sandbox-right" class="form-control mb-3" type="text" placeholder="Правая строка" />
+                    </form>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <pre id="sandbox-output" class="border p-3"></pre>
+                    </div>
+                </div>
+            </div>
+            <div id="the-editlist-test-cases" class="container">
+                <h6 class="font-weight-light">Табличное тестирование</h6>
+            </div>
+        </main>
+
+        <script src="/static/js/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="/static/js//popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="/static/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+        <script>
+        //------------------------------------------------
+        // !!!!! vvvvv vvvvv vvvvv vvvvv vvvvv vvvvv vvvvv
+        //
+        // TODO(sandello): Правки по Левенштейну.
+        //
+        // Необходимо реализовать алгоритм расчета расстояния Левенштейна
+        // между строками left и right и вернуть "список правок",
+        // как получить из левой строки -- правую.
+        //
+        // На входе -- две строки.
+        // На выходе -- массив правок вида:
+        // [
+        //   ["I", 0, "a"], // вставка
+        //   ["D", 3],      // удаление
+        //   ["X", 4, "b"], // замена
+        // ]
+        //
+        // Пример:
+        //   * editList("cat", "cats") = [ ["I", 3, "s"] ]
+        //   * editList("cat", "cuts") = [ ["X", 1, "u"], ["I", 3, "s"] ]
+        //   * editList("cat", "at")   = [ ["D", 0 ] ]
+        //   * editList("", "hi")      = [ ["I", 0, "h"], ["I", 1, "i"] ]
+        //
+        // Подсказки:
+        //   1. Для ассоциативной структуры данных с численными ключами можно использовать JS-объекты:
+        //        var a = {}; a[5] = 0;
+        //      При этом элементы, к которым не было обращений -- не инициализированы.
+        //        var a = {}; a[8] === undefined;
+        //      Проверка наличия ключа может быть устроена так:
+        //        var a = {}; if (a[8] === undefined) { /* нет ключа */ } else { /* есть ключ */ }
+        //   2. Для ассоциативной структуры с произвольным ключами можно использовать Map.
+        //      https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Map
+        function editList(left, right) {
+            // TODO: Напиши меня!
+        }
+        // !!!!! ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^
+        //------------------------------------------------
+
+        // Ниже расположен тестирующий код.
+        // (1) Тестируем известные пары.
+        [
+            ["cat", "cats"],
+            ["cat", "cuts"],
+            ["cat", "at"],
+            ["", "hi"],
+            ["hi", ""],
+            ["", ""]
+        ].forEach(function(pair) {
+            let [left, right] = pair;
+            let outcome = null;
+            let error = false;
+            try {
+                outcome = editList(left, right);
+                outcome = JSON.stringify(outcome, null, 2);
+            } catch (ex) {
+                error = true;
+                console.error("[1/2] Ошибка в проверка одного из кейсов.", ex);
+                console.error("[2/2] <<", left, "||", right, ">>");
+            };
+            let html = '';
+            html += '<div class="row border-top p-3">'
+            html += '<div class="col">';
+            html += '<p>'
+            html += '<span class="badge badge-primary mr-3" style="width: 5em;">LEFT</span>';
+            html += '<samp>' + JSON.stringify(left) + '</samp>';
+            html += '</p>';
+            html += '<p>'
+            html += '<span class="badge badge-primary mr-3" style="width: 5em;">RIGHT</span>';
+            html += '<samp>' + JSON.stringify(right) + '</samp>';
+            html += '</p>';
+            html += '</div>';
+            html += '<div class="col">';
+            if (error) {
+                html += '<div class="alert alert-danger" role="alert">Ошибка. См. консоль.</div>';
+            } else {
+                html += '<pre>' + $(document.createElement("pre")).text(outcome).html() + '</pre>';
+            }
+            html += '</div>';
+            html += '</div>';
+            $("#the-editlist-test-cases").append(html);
+        });
+        // (2) Интерактивная форма тестирования.
+        function render() {
+            let left = $("#sandbox-left").val();
+            let right = $("#sandbox-right").val();
+            let outcome = null;
+            let error = false;
+            try {
+                outcome = editList(left, right);
+                outcome = JSON.stringify(outcome, null, 2);
+            } catch (ex) {
+                error = true;
+                console.error("*** Ошибка в интерактивном выполнении.", ex);
+                console.error("<<", left, "||", right, ">>");
+            };
+            if (error) {
+                $("#sandbox-output")
+                    .text("~_~ (см. консоль)")
+                    .addClass("bg-danger")
+                    .addClass("text-white");
+            } else {
+                $("#sandbox-output")
+                    .text(outcome)
+                    .removeClass("bg-danger")
+                    .removeClass("text-white");
+            }
+        }
+        $("#sandbox-left").on("input", render);
+        $("#sandbox-right").on("input", render);
+        render();
+        </script>
+  </body>
+</html>
