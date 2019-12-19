@@ -87,22 +87,22 @@ function editList(left, right);
 Сигнатуры функций модели документа такие:
 
 ```js
-function public_newDocument();
-function public_getContent(document);
+function public_newDocument() {}
+function public_getContent(document) {}
 
-function public_serializeState(document); // можно отложить реализацию до 7-го шага
-function public_mergeWithSerializedState(document, serializedState); // можно отложить реализацию до 7-го шага
+function public_serializeState(document) {} // можно отложить реализацию до 7-го шага
+function public_mergeWithSerializedState(document, serializedState) {} // можно отложить реализацию до 7-го шага
 
-function public_insertAfter(document, index, symbol); // реализация фиксирована, не трогать
-function public_remove(document, index); // реализация фиксирована, не трогать
-function public_replace(document, index, symbol); // реализация фиксирована, не трогать
+function public_insertAfter(document, index, symbol) {} // реализация фиксирована, не трогать
+function public_remove(document, index) {} // реализация фиксирована, не трогать
+function public_replace(document, index, symbol) {} // реализация фиксирована, не трогать
 
-function _getPositionByIndex(document, index);
-function _allocate(document, begin, end);
-function _allocateLeft(document, begin, end);
-function _allocateRight(document, begin, end);
-function _applyInsert(document, position, symbol);
-function _applyRemove(document, position);
+function _getPositionByIndex(document, index) {}
+function _allocate(document, begin, end) {}
+function _allocateLeft(document, begin, end) {}
+function _allocateRight(document, begin, end) {}
+function _applyInsert(document, position, symbol) {}
+function _applyRemove(document, position) {}
 ```
 
 Исходный код функции должен быть размещен в файле `templates/j_treedoc.js`.
@@ -131,6 +131,9 @@ function _applyRemove(document, position);
 Ваша задача -- взять наработки с шестого шага и добавить пересылку данных
 при изменении модели документа.
 
-Код работы с сетью можно позаимствовать из `templates/p_1_start.html`.
+Стартовый шаблон и указания -- см. `templates/p_7_integration.html`.
+
+Код работы с сетью можно позаимствовать из первых трех шагов.
+Код для работы с текстовым полем -- из шестого.
 
 Это задание для самостоятельной разработки.
