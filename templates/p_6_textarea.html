@@ -46,9 +46,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col" id="integration-editlist">
-                        <pre class="border p-3">asdf</pre>
-                    </div>
+                    <div class="col" id="integration-editlist"></div>
                 </div>
             </div>
         </main>
@@ -90,6 +88,15 @@
             // посчитать список правок между oldContent и newContent,
             // применить правки к документу.
         }
+
+        // Также полезно посмотреть, как вызывается функция updateLocalDocument.
+        //
+        // $("#integration-submit").click(function(event) {
+        //   event.preventDefault();
+        //   updateLocalDocument($("#integration-textarea").val());
+        // });
+        //
+        // (Реальный код вызова в этом файле чуть более сложный: включен код отрисовки ошибок.)
 
         // !!!!! ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^ ^^^^^
         //------------------------------------------------
