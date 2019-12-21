@@ -40,13 +40,13 @@ async def handle_ws():
             data = await queue.get()
             # Раскомментируйте строчку ниже, чтобы добавить случайные задержки в синхронизации.
             # await asyncio.sleep(random.random() / 5.0)
-            log.info("Пользователь %s: SEND[%r]", user, data)
+            log.info("Пользователь %s: SEND[%r]", user, len(data))
             await quart.websocket.send(data)
 
     async def receiving():
         while True:
             data = await quart.websocket.receive()
-            log.info("Пользователь %s: RECV[%r]", user, data)
+            log.info("Пользователь %s: RECV[%r]", user, len(data))
             for queue1 in queues:
                 await queue1.put(data)
 
