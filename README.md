@@ -156,7 +156,7 @@ function _getIndexByPosition(document, position) {
 Тесты для проверки следующий:
 
 ```js
-function testPositionSync1() {
+function testPositionSync() {
     let d = public_newDocument();
     public_insertAfter(d, -1, "c");
     public_insertAfter(d,  0, "a");
@@ -165,6 +165,40 @@ function testPositionSync1() {
     for (var i = -1; i <= 3; ++i) {
         assertEquals(i, _getIndexByPosition(d, _getPositionByIndex(d, i)));
     }
+}
+
+function testPositionSyncWithInsertions() {
+    let d = public_newDocument();
+    public_insertAfter(d, -1, "a");
+    var p = _getPositionByIndex(d, 0);
+
+    assertEquals(public_getContent(d), "a");
+    assertEquals(0, _getIndexByPosition(d, p));
+
+    public_insertAfter(d, -1, "b");
+    assertEquals(public_getContent(d), "ba");
+    assertEquals(1, _getIndexByPosition(d, p));
+
+    public_insertAfter(d, -1, "c");
+    assertEquals(public_getContent(d), "cba");
+    assertEquals(2, _getIndexByPosition(d, p));
+}
+
+function testPositionSyncWithDeletions() {
+    let d = public_newDocument();
+    public_insertAfter(d, -1, "c");
+    public_insertAfter(d,  0, "a");
+    public_insertAfter(d,  1, "t");
+    var p = _getPositionByIndex(d, 2);
+
+    assertEquals(public_getContent(d), "cat");
+    assertEquals(2, _getIndexByPosition(d, p));
+    public_remove(d, 0);
+    assertEquals(public_getContent(d), "at");
+    assertEquals(1, _getIndexByPosition(d, p));
+    public_remove(d, 0);
+    assertEquals(public_getContent(d), "t");
+    assertEquals(0, _getIndexByPosition(d, p));
 }
 ```
 
