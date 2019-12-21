@@ -285,11 +285,20 @@ function bench(name, fn) {
     var begin = new Date();
     var result = fn();
     var end = new Date();
-    console.log("[bench] " + name + " выполялся " + (end - begin) + "мс");
+    console.log("[bench] Фрагмент " + name + " выполнялся " + (end - begin) + "мс");
     return result;
 }
 
-// ... далее по коду.
+// Далее по коду функцию можно использовать следующим образом.
+// Будем использовать языковое сокращение:
+//
+//   () => expr;
+//
+// Эквивалентно:
+//
+//   function() { return expr; }
+//
+// Тогда:
 
 // Было:
 var diff = editList(left, right);
