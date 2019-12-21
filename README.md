@@ -126,7 +126,7 @@ function _applyRemove(document, position) {}
 
 Указания и подробности -- см. в `templates/p_6_textarea.html`.
 
-## Шаг седьмой: собираем воедино
+### Шаг седьмой: собираем воедино
 
 Ваша задача -- взять наработки с шестого шага и добавить пересылку данных
 при изменении модели документа.
@@ -137,3 +137,69 @@ function _applyRemove(document, position) {}
 Код для работы с текстовым полем -- из шестого.
 
 Это задание для самостоятельной разработки.
+
+## Пятница 20.12
+
+### Улучшение 1: непрыгающий курсор
+
+Чтобы решить проблему прыгающего курсора при синхронизации, нужно сделать следующее:
+
+Во-первых, в `j_treedoc.js` реализовать функцию:
+
+```js
+function _getIndexByPosition(document, position) {
+    // Вернуть индекс по указанной позиции.
+    // То есть вернуть число неудаленных символов, которые предшествуют данной позиции.
+}
+```
+
+Тесты для проверки следующий:
+
+```js
+function testPositionSync1() {
+    let d = public_newDocument();
+    public_insertAfter(d, -1, "c");
+    public_insertAfter(d,  0, "a");
+    public_insertAfter(d,  1, "t");
+    assertEquals(public_getContent(d), "cat");
+    for (var i = -1; i <= 3; ++i) {
+        assertEquals(i, _getIndexByPosition(d, _getPositionByIndex(d, i)));
+    }
+}
+```
+
+Во-вторых, улучшить интеграцию между текстовым полем и моделью.
+
+Работа с курсором строится через работу с выделенной областью -- selection range.
+
+Для получения выделенной области используйте следующий код:
+
+```js
+var start = $("#integration-textarea").prop("selectionStart");
+var end = $("#integration-textarea").prop("selectionEnd");
+console.log("Курсор находится в позиции (" + start + ", " + end + ")");
+```
+
+Для обновления выделенной области используйте следующий код:
+
+```js
+$("#integration-textarea").get()[0].setSelectionRange(start, end);
+```
+
+Таким образом, чтобы решить задачу сохранения положения курсора, код синхронизации нужно модифицировать
+примерно так:
+
+```js
+var startIndex = $("#integration-textarea").prop("selectionStart");
+var startPosition = _getPositionByIndex(document, startIndex);
+var endIndex = $("#integration-textarea").prop("selectionEnd");
+var endPosition = _getPositionByIndex(document, endIndex);
+// можно проверить, что startPosition <= endPosition
+
+// далее код синхронизации
+
+startIndex = _getIndexByPosition(startPosition);
+endIndex = _getIndexByPosition(endPosition);
+
+$("#integration-textarea").get()[0].setSelectionRange(startIndex, endIndex);
+```
