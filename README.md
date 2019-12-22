@@ -132,6 +132,10 @@ function _applyRemove(document, position) {}
 
 ### Шаг седьмой: собираем воедино
 
+> NB: Если вы работате самостоятельно, без лекционного материала,
+> то для лучшего понимания концепции вам будет полена статья
+> [CRATE: Writing Stories Together with our Browsers](https://hal.archives-ouvertes.fr/hal-01303333/file/paper.pdf).
+
 Ваша задача -- взять наработки с шестого шага и добавить пересылку данных
 при изменении модели документа.
 
